@@ -49,9 +49,9 @@ survey_dates.csv
 
 Dates community monitors were working and looking for hunted turtles.
 
-turtle-hunters.csv  
+turtle-fishers.csv  
 
-Estimated number of hunters that participated and did not particate in surveys in each community.  
+Estimated number of fishers that participated and did not particate in surveys in each community.  
 
 turtle-harvest-not-sighted.csv  
 
@@ -69,4 +69,4 @@ Turtle Reef Areas 2019 Jan 24: shapefiles of reefs identified by local communiti
 
 SI_admin: shapefile of Solomon Islands
 
-turtle-hunter-questions.csv survey data of questions asked to turtle hunters about their contemporary and historical catch. 
+turtle-hunter-questions.csv survey data of questions asked to turtle hunters about their contemporary and historical catch.
