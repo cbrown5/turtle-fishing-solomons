@@ -8,6 +8,7 @@ Citation:
 
 Richard Hamilton, Simon Vuto, Christopher Brown, Peter Waldie, John Pita, Rosalie Masu, Nate Peterson, Christine Hof and Col Limpus. (2022) "Free divers capture thousands of turtles a year in Solomon Islands". Unpublished manuscript
 
+Note: This repo is also the home to some ongoing related projects, which will also be published here. Code not documented below can be ignored. 
 
 ## Overview of scripts
 
