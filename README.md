@@ -1,16 +1,22 @@
-# Free divers capture thousands of turtles a year in Solomon Islands
+# Turtle bycatch and harvest in Solomon Islands
 
-Code and data in support of the manuscript
+Code and data in support of two studies
 
 CJ Brown, Rick Hamilton
 
-Citation:
+Citations: 
 
-Richard Hamilton, Simon Vuto, Christopher Brown, Peter Waldie, John Pita, Rosalie Masu, Nate Peterson, Christine Hof and Col Limpus. (2022) "Free divers capture thousands of turtles a year in Solomon Islands". Unpublished manuscript
+ Hamilton, R., Vuto, S., Brown, C., Waldie, P., Pita, J., Babaua, R. et al. (2024). Freedivers harvest thousands of sea turtles a year in the Solomon Islands. Aquatic Conservation: Marine and Freshwater Ecosystems, 34(1), e4050. https://doi.org/10.1002/aqc.4050 
+
+ Brown, Hamilton, Vuto, Atu, Masu, Ramofafia, Waldie (2024). Contributions of small-scale and longline fishing to sea turtle mortality in the Solomon Islands. Forthcoming
+
 
 Note: This repo is also the home to some ongoing related projects, which will also be published here. Code not documented below can be ignored. 
 
 ## Overview of scripts
+
+Scripts for the second study (LLF/SSF comparison) are in the sub-folder /LLF-SSF-comparison. Unfortunately I am unable to provide the data for the LLF. The SSF is available as .csv files on this page. 
+
 
 Scripts are in the scripts folder and include
 
