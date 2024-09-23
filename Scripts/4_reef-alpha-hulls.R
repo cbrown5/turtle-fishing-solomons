@@ -8,6 +8,34 @@ library(gridExtra)
 library(sf)
 library(dplyr)
 library(ggplot2)
+library(alphahull)
+library(igraph)
+# functions from Cecina Babich Morrow for converting ashape 
+# to lines https://babichmorrowc.github.io/post/2019-03-18-alpha-hull/
+ashape2poly <- function(ashape){
+  # Convert node numbers into characters
+  ashape$edges[,1] <- as.character(ashape$edges[,1])
+  ashape_graph <- graph_from_edgelist(ashape$edges[,1:2], directed = FALSE)
+  if (!is.connected(ashape_graph)) {
+    stop("Graph not connected")
+  }
+  if (any(degree(ashape_graph) != 2)) {
+    stop("Graph not circular")
+  }
+  if (clusters(ashape_graph)$no > 1) {
+    stop("Graph composed of more than one circle")
+  }
+  # Delete one edge to create a chain
+  cut_graph <- ashape_graph - E(ashape_graph)[1]
+  # Find chain end points
+  ends = names(which(degree(cut_graph) == 1))
+  path = get.shortest.paths(cut_graph, ends[1], ends[2])$vpath[[1]]
+  # this is an index into the points
+  pathX = as.numeric(V(ashape_graph)[path]$name)
+  # join the ends
+  pathX = c(pathX, pathX[1])
+  return(pathX)
+}
 
 # Identify 'coastal' villages - those within 800 metres of the coast 
 coastal_threshold <- 800
@@ -89,23 +117,56 @@ ggsave("Shared/Outputs/maps.pdf",
 reef_turtles <- filter(reeft, nharv>0)
 comms <- unique(reef_turtles$Community)
 
+distmult <- 5 #multiple of mean edge length to use
+# for setting alpha parameter
 reef_conv <- NULL
 
 for (icomm in comms){
+  # icomm <- comms[1]
   xtemp1 <- reef_turtles %>%
-    filter(Community == icomm)
-  xtemp2 <- xtemp1 %>% 
-    st_union() %>%
-    st_convex_hull()
+    filter(Community == icomm) 
+  xtemp2 <- xtemp1 %>%
+    # st_centroid() %>%
+    st_coordinates()
+  #voronio 
+  xdup <- duplicated(xtemp2[,1])
+  ydup <- duplicated(xtemp2[,2])
+  i <- !(xdup & ydup)
+  reef_vor <- data.frame(delvor(xtemp2[i,1:2])$mesh)
+  
+  #mean distance of edges
+  vor_dists <- sqrt((reef_vor$mx1 - reef_vor$mx2)^2 + (reef_vor$my1 - reef_vor$my2)^2)
+  alpha <- mean(vor_dists) * distmult
+  
+  #Do ashape and convert to sf polygon
+  reef_ahull <- ashape(xtemp2[i,1:2], alpha = alpha)
+  ihull <- try( ashape2poly(reef_ahull))
+  
+  #use convex hull for when linear shapes when
+  # area gets split into multiple polygons
+  #doing so adds more water area  to the hulls,
+  # but doesn't add reef area
+  if (class(ihull) == "try-error"){
+    polcrs <- xtemp1 %>% 
+      st_union() %>%
+      st_convex_hull() 
+  } else {
+  x <- data.frame(xtemp2[i,][ihull,])
+  polbasic <- st_polygon(
+    list(cbind(x$X, 
+        x$Y)))
+  polcrs <- st_sfc(polbasic, crs=st_crs(xtemp1))
+  }
+  #Make a list of all ahulls
   comm_att <- data.frame(Community = xtemp1$Community[1],
                          reef_area = sum(st_area(xtemp1)))
-  reef_conv <- c(reef_conv, list(st_sf(comm_att, geometry = xtemp2)))
+  reef_conv <- c(reef_conv, list(st_sf(comm_att, geometry = polcrs)))
               
 }
 
 reef_conv <- do.call("rbind", reef_conv)
 
-save(reef_conv, file = "data-raw/reef_conv.rda")
+save(reef_conv, file = "data-raw/reef_aconv.rda")
 
 
 
@@ -114,7 +175,7 @@ gm <- ggplot() +
   geom_sf(data = reeft, aes(color = nturt_est, fill = nturt_est), alpha = 0.8) + 
   geom_sf(data = reef_conv)
 
-ggsave("Shared/Outputs/map-footprint.png", gm)
+ggsave("Shared/Outputs/map-footprint_acnov.png", gm)
 
 
 #

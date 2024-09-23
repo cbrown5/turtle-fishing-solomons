@@ -49,6 +49,8 @@ reefs_temotu <- st_read(dsn = "Shared/Data/IMARS - EastSolomons/",
 
 #reef area convex hulls
 load("data-raw/reef_conv.rda")
+#use alpha hulls
+# load("data-raw/reef_aconv.rda")
 
 #coastal villages
 load("data-raw/sv_coastal.rda")
@@ -178,8 +180,8 @@ g1 <- ggplot(dat_xout) +
   ylab("Density") +
   theme_classic()
 
-ggsave(g1, file = "Shared/Outputs/annual-turtle-typical.png",
-       width = 6, height = 4)
+# ggsave(g1, file = "Shared/Outputs/annual-turtle-typical.png",
+       # width = 6, height = 4)
 
 quantile(xout, c(0.025, 0.5, 0.975))
 
@@ -217,12 +219,12 @@ tm2 <- tm_shape(rland,
 
 tmboth <- tmap_arrange(tm1, tm2)
 
-tmap_save(tmboth, 
-          filename = "Shared/Outputs/harvest-prob-maps.png",
-          width = 5, height = 7)
+# tmap_save(tmboth, 
+          # filename = "Shared/Outputs/harvest-prob-maps.png",
+          # width = 5, height = 7)
 
 
-save(rdistprob, file = "data-raw/turtle-harvest-prob.rda")
+# save(rdistprob, file = "data-raw/turtle-harvest-prob.rda")
 
 #
 # Add back in  villages with abnormally high harvest
@@ -236,6 +238,9 @@ xout_total <- xout +
 
 round(quantile(xout_total, c(0.025, 0.5, 0.975)))
 sum(xout_total>5800)/length(xout_total)
+
+write.csv(xout_total, "Shared/Outputs/turtle-SSF-bootstraps.csv",
+          row.names = FALSE)
 
 #Proportion in hotspots
 (n_special*(filter(harv_areas, Community == "Kia")$nharv_est) + 
